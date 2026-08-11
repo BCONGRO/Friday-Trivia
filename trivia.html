@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Trivia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .week-label {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .question-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .question-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        .question {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .radio-option:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+        
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+            flex: 1;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+
+        .admin-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .admin-toggle {
+            background: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .admin-form {
+            display: none;
+        }
+
+        textarea {
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Friday Trivia</h1>
+        <p class="week-label" id="weekLabel">Week of <span id="currentDate"></span></p>
+        
+        <div class="question-section">
+            <div class="question-label">This Week's Question</div>
+            <div class="question" id="mainQuestion">What is the capital of France?</div>
+        </div>
+
+        <form id="triviaForm">
+            <div class="form-group">
+                <label for="username">Your Name</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Your Answer</label>
+                <div class="radio-group" id="answerOptions">
+                    <div class="radio-option">
+                        <input type="radio" id="option1" name="answer" value="Paris" required>
+                        <label for="option1">Paris</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="option2" name="answer" value="London" required>
+                        <label for="option2">London</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="option3" name="answer" value="Berlin" required>
+                        <label for="option3">Berlin</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="option4" name="answer" value="Madrid" required>
+                        <label for="option4">Madrid</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bonus">Bonus Question</label>
+                <div class="question-section" style="margin-bottom: 15px;">
+                    <div class="question" id="bonusQuestion" style="font-size: 1.1em;">What year was the Eiffel Tower completed?</div>
+                </div>
+                <input type="text" id="bonus" name="bonus" placeholder="Enter your answer">
+            </div>
+
+            <button type="submit">Submit Answer</button>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            Thank you! Your email client should open now. Please click Send to submit your answer.
+        </div>
+        
+        <div class="error-message" id="errorMessage">
+            Please fill out all required fields.
+        </div>
+
+        <div class="admin-section">
+            <button class="admin-toggle" onclick="toggleAdmin()">Admin: Update Question</button>
+            
+            <div class="admin-form" id="adminForm">
+                <div class="form-group">
+                    <label for="newQuestion">Main Question</label>
+                    <textarea id="newQuestion"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="newOption1">Option 1</label>
+                    <input type="text" id="newOption1">
+                </div>
+
+                <div class="form-group">
+                    <label for="newOption2">Option 2</label>
+                    <input type="text" id="newOption2">
+                </div>
+
+                <div class="form-group">
+                    <label for="newOption3">Option 3</label>
+                    <input type="text" id="newOption3">
+                </div>
+
+                <div class="form-group">
+                    <label for="newOption4">Option 4</label>
+                    <input type="text" id="newOption4">
+                </div>
+
+                <div class="form-group">
+                    <label for="newBonus">Bonus Question</label>
+                    <textarea id="newBonus"></textarea>
+                </div>
+
+                <button onclick="updateQuestion()">Update Question</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionData = JSON.parse(localStorage.getItem('questionData')) || {
+            question: "What is the capital of France?",
+            options: ["Paris", "London", "Berlin", "Madrid"],
+            bonus: "What year was the Eiffel Tower completed?"
+        };
+
+        function loadQuestion() {
+            document.getElementById('mainQuestion').textContent = questionData.question;
+            document.getElementById('bonusQuestion').textContent = questionData.bonus;
+            
+            const container = document.getElementById('answerOptions');
+            container.innerHTML = '';
+            
+            questionData.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'radio-option';
+                div.innerHTML = `
+                    <input type="radio" id="option${idx+1}" name="answer" value="${opt}" required>
+                    <label for="option${idx+1}">${opt}</label>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('newQuestion').value = questionData.question;
+            document.getElementById('newBonus').value = questionData.bonus;
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`newOption${i+1}`).value = questionData.options[i] || '';
+            }
+        }
+
+        function setCurrentDate() {
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
+        }
+
+        document.getElementById('triviaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const answer = document.querySelector('input[name="answer"]:checked').value;
+            const bonus = document.getElementById('bonus').value;
+            
+            const timestamp = new Date().toLocaleString();
+            
+            const emailBody = `Name: ${username}%0D%0A%0D%0AQuestion: ${encodeURIComponent(questionData.question)}%0D%0AAnswer: ${encodeURIComponent(answer)}%0D%0A%0D%0ABonus Question: ${encodeURIComponent(questionData.bonus)}%0D%0ABonus Answer: ${encodeURIComponent(bonus)}%0D%0A%0D%0ASubmitted: ${timestamp}`;
+            
+            const mailtoLink = `mailto:basil.congro@gtri.gatech.edu?subject=Friday Trivia&body=${emailBody}`;
+            
+            window.location.href = mailtoLink;
+            
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('triviaForm').reset();
+            
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        });
+
+        function toggleAdmin() {
+            const adminForm = document.getElementById('adminForm');
+            adminForm.style.display = adminForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updateQuestion() {
+            const newQuestion = document.getElementById('newQuestion').value;
+            const newBonus = document.getElementById('newBonus').value;
+            const options = [
+                document.getElementById('newOption1').value,
+                document.getElementById('newOption2').value,
+                document.getElementById('newOption3').value,
+                document.getElementById('newOption4').value
+            ];
+
+            questionData.question = newQuestion;
+            questionData.bonus = newBonus;
+            questionData.options = options;
+
+            localStorage.setItem('questionData', JSON.stringify(questionData));
+            loadQuestion();
+            
+            alert('Question updated successfully!');
+        }
+
+        setCurrentDate();
+        loadQuestion();
+    </script>
+</body>
+</html>
