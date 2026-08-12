@@ -149,6 +149,12 @@
             transform: translateY(0);
         }
         
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .success-message {
             display: none;
             background: #d4edda;
@@ -187,6 +193,20 @@
         }
 
         textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            min-height: 100px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -239,11 +259,11 @@
         </form>
 
         <div class="success-message" id="successMessage">
-            Thank you! Your email client should open now. Please click Send to submit your answer.
+            Thank you! Your answer has been submitted.
         </div>
         
         <div class="error-message" id="errorMessage">
-            Please fill out all required fields.
+            Sorry, there was an error submitting your answer. Please try again.
         </div>
 
         <div class="admin-section">
@@ -286,6 +306,9 @@
     </div>
 
     <script>
+        const SHEET_ID = '1HUN_xbnrg77HzILm4ulZCKa1-yfHvw0vZQ6wUIMhsCA';
+        const API_KEY = 'AIzaSyBtkiGqSUVCuuayz_zuWxVmW4L2D9LtH4E';
+        
         const questionData = JSON.parse(localStorage.getItem('questionData')) || {
             question: "What is the capital of France?",
             options: ["Paris", "London", "Berlin", "Madrid"],
@@ -322,8 +345,32 @@
             document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
         }
 
-        document.getElementById('triviaForm').addEventListener('submit', function(e) {
+        async function appendToSheet(data) {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A:F:append?valueInputOption=RAW&key=${API_KEY}`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    values: [data]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save to sheet');
+            }
+
+            return response.json();
+        }
+
+        document.getElementById('triviaForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
             
             const username = document.getElementById('username').value;
             const answer = document.querySelector('input[name="answer"]:checked').value;
@@ -331,18 +378,33 @@
             
             const timestamp = new Date().toLocaleString();
             
-            const emailBody = `Name: ${username}%0D%0A%0D%0AQuestion: ${encodeURIComponent(questionData.question)}%0D%0AAnswer: ${encodeURIComponent(answer)}%0D%0A%0D%0ABonus Question: ${encodeURIComponent(questionData.bonus)}%0D%0ABonus Answer: ${encodeURIComponent(bonus)}%0D%0A%0D%0ASubmitted: ${timestamp}`;
-            
-            const mailtoLink = `mailto:basil.congro@gtri.gatech.edu?subject=Friday Trivia&body=${emailBody}`;
-            
-            window.location.href = mailtoLink;
-            
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('triviaForm').reset();
-            
-            setTimeout(() => {
+            const rowData = [
+                timestamp,
+                username,
+                questionData.question,
+                answer,
+                questionData.bonus,
+                bonus
+            ];
+
+            try {
+                await appendToSheet(rowData);
+                
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('triviaForm').reset();
+                
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').style.display = 'block';
                 document.getElementById('successMessage').style.display = 'none';
-            }, 3000);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Answer';
+            }
         });
 
         function toggleAdmin() {
