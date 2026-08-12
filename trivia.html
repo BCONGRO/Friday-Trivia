@@ -32,9 +32,19 @@
         
         h1 {
             color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            margin-bottom: 5px;
+            font-size: 2.8em;
             text-align: center;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        
+        .subheader {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
         
         .week-label {
@@ -211,7 +221,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Friday Trivia</h1>
+        <h1>BASIL'S BRAIN BUSTERS 🧠</h1>
+        <p class="subheader">ESD Fun Friday Trivia</p>
         <p class="week-label" id="weekLabel">Week of <span id="currentDate"></span></p>
         
         <div class="question-section">
@@ -287,7 +298,9 @@
                 questionData = {
                     question: data.question,
                     options: [data.option1, data.option2, data.option3, data.option4],
-                    bonus: data.bonus
+                    bonus: data.bonus,
+                    week: data.week,
+                    category: data.category
                 };
                 
                 displayQuestion();
@@ -335,12 +348,14 @@
             const timestamp = new Date().toLocaleString();
             
             const url = WEB_APP_URL + 
-                '?timestamp=' + encodeURIComponent(timestamp) +
+                '?week=' + encodeURIComponent(questionData.week) +
+                '&timestamp=' + encodeURIComponent(timestamp) +
                 '&name=' + encodeURIComponent(username) +
                 '&question=' + encodeURIComponent(questionData.question) +
                 '&answer=' + encodeURIComponent(answer) +
                 '&bonusQuestion=' + encodeURIComponent(questionData.bonus) +
-                '&bonusAnswer=' + encodeURIComponent(bonus);
+                '&bonusAnswer=' + encodeURIComponent(bonus) +
+                '&category=' + encodeURIComponent(questionData.category);
             
             console.log('Submitting to:', url);
             
