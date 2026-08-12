@@ -223,7 +223,7 @@
     <div class="container">
         <h1>BASIL'S BRAIN BUSTERS 🧠</h1>
         <p class="subheader">ESD Fun Friday Trivia</p>
-        <p class="week-label" id="weekLabel">Week of <span id="currentDate"></span></p>
+        <p class="week-label" id="weekLabel"><span id="currentDate">Loading...</span></p>
         
         <div class="question-section">
             <div class="question-label">This Week's Question</div>
@@ -304,6 +304,7 @@
                 };
                 
                 displayQuestion();
+                document.getElementById('currentDate').textContent = questionData.week;
             } catch (error) {
                 console.error('Error loading question:', error);
                 questionData = {
@@ -333,53 +334,12 @@
             });
         }
 
-        function setCurrentDate() {
-            const today = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
-        }
-
-        document.getElementById('triviaForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const answer = document.querySelector('input[name="answer"]:checked').value;
-            const bonus = document.getElementById('bonus').value;
-            const timestamp = new Date().toLocaleString();
-            
-            const url = WEB_APP_URL + 
-                '?week=' + encodeURIComponent(questionData.week) +
-                '&timestamp=' + encodeURIComponent(timestamp) +
-                '&name=' + encodeURIComponent(username) +
-                '&question=' + encodeURIComponent(questionData.question) +
-                '&answer=' + encodeURIComponent(answer) +
-                '&bonusQuestion=' + encodeURIComponent(questionData.bonus) +
-                '&bonusAnswer=' + encodeURIComponent(bonus) +
-                '&category=' + encodeURIComponent(questionData.category);
-            
-            console.log('Submitting to:', url);
-            
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = url;
-            iframe.onload = function() {
-                console.log('Submission completed');
-            };
-            iframe.onerror = function() {
-                console.log('Submission error');
-            };
-            document.body.appendChild(iframe);
-            
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('triviaForm').reset();
-            
-            setTimeout(() => {
-                document.getElementById('successMessage').style.display = 'none';
-            }, 3000);
-        });
-
         setCurrentDate();
         loadQuestionFromSheet();
+        
+        function setCurrentDate() {
+            document.getElementById('currentDate').textContent = 'Loading...';
+        }
     </script>
 </body>
 </html>
