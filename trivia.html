@@ -344,63 +344,34 @@
             document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
         }
 
-        async function appendToSheet(data) {
-            const formData = new URLSearchParams();
-            formData.append('timestamp', data[0]);
-            formData.append('name', data[1]);
-            formData.append('question', data[2]);
-            formData.append('answer', data[3]);
-            formData.append('bonusQuestion', data[4]);
-            formData.append('bonusAnswer', data[5]);
-
-            const response = await fetch(WEB_APP_URL + '?' + formData.toString(), {
-                method: 'GET',
-                redirect: 'follow'
-            });
-
-            return true;
-        }
-
-        document.getElementById('triviaForm').addEventListener('submit', async function(e) {
+        document.getElementById('triviaForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
             
             const username = document.getElementById('username').value;
             const answer = document.querySelector('input[name="answer"]:checked').value;
             const bonus = document.getElementById('bonus').value;
-            
             const timestamp = new Date().toLocaleString();
             
-            const rowData = [
-                timestamp,
-                username,
-                questionData.question,
-                answer,
-                questionData.bonus,
-                bonus
-            ];
-
-            try {
-                await appendToSheet(rowData);
-                
-                document.getElementById('successMessage').style.display = 'block';
-                document.getElementById('errorMessage').style.display = 'none';
-                document.getElementById('triviaForm').reset();
-                
-                setTimeout(() => {
-                    document.getElementById('successMessage').style.display = 'none';
-                }, 3000);
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('errorMessage').style.display = 'block';
+            const url = WEB_APP_URL + 
+                '?timestamp=' + encodeURIComponent(timestamp) +
+                '&name=' + encodeURIComponent(username) +
+                '&question=' + encodeURIComponent(questionData.question) +
+                '&answer=' + encodeURIComponent(answer) +
+                '&bonusQuestion=' + encodeURIComponent(questionData.bonus) +
+                '&bonusAnswer=' + encodeURIComponent(bonus);
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('triviaForm').reset();
+            
+            setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Answer';
-            }
+                document.body.removeChild(iframe);
+            }, 3000);
         });
 
         function toggleAdmin() {
