@@ -227,7 +227,7 @@
         
         <div class="question-section">
             <div class="question-label">This Week's Question</div>
-            <div class="question" id="mainQuestion">What is the capital of France?</div>
+            <div class="question" id="mainQuestion">Loading question...</div>
         </div>
 
         <form id="triviaForm">
@@ -240,20 +240,8 @@
                 <label>Your Answer</label>
                 <div class="radio-group" id="answerOptions">
                     <div class="radio-option">
-                        <input type="radio" id="option1" name="answer" value="Paris" required>
-                        <label for="option1">Paris</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="option2" name="answer" value="London" required>
-                        <label for="option2">London</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="option3" name="answer" value="Berlin" required>
-                        <label for="option3">Berlin</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="option4" name="answer" value="Madrid" required>
-                        <label for="option4">Madrid</label>
+                        <input type="radio" id="option1" name="answer" value="" required disabled>
+                        <label for="option1">Loading...</label>
                     </div>
                 </div>
             </div>
@@ -261,7 +249,7 @@
             <div class="form-group">
                 <label for="bonus">Bonus Question</label>
                 <div class="question-section" style="margin-bottom: 15px;">
-                    <div class="question" id="bonusQuestion" style="font-size: 1.1em;">What year was the Eiffel Tower completed?</div>
+                    <div class="question" id="bonusQuestion" style="font-size: 1.1em;">Loading...</div>
                 </div>
                 <input type="text" id="bonus" name="bonus" placeholder="Enter your answer">
             </div>
@@ -333,6 +321,45 @@
                 container.appendChild(div);
             });
         }
+
+        document.getElementById('triviaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const answer = document.querySelector('input[name="answer"]:checked').value;
+            const bonus = document.getElementById('bonus').value;
+            const timestamp = new Date().toLocaleString();
+            
+            const url = WEB_APP_URL + 
+                '?week=' + encodeURIComponent(questionData.week) +
+                '&timestamp=' + encodeURIComponent(timestamp) +
+                '&name=' + encodeURIComponent(username) +
+                '&question=' + encodeURIComponent(questionData.question) +
+                '&answer=' + encodeURIComponent(answer) +
+                '&bonusQuestion=' + encodeURIComponent(questionData.bonus) +
+                '&bonusAnswer=' + encodeURIComponent(bonus) +
+                '&category=' + encodeURIComponent(questionData.category);
+            
+            console.log('Submitting to:', url);
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            iframe.onload = function() {
+                console.log('Submission completed');
+            };
+            iframe.onerror = function() {
+                console.log('Submission error');
+            };
+            document.body.appendChild(iframe);
+            
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('triviaForm').reset();
+            
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        });
 
         setCurrentDate();
         loadQuestionFromSheet();
