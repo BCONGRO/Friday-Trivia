@@ -345,20 +345,17 @@
         }
 
         async function appendToSheet(data) {
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    timestamp: data[0],
-                    name: data[1],
-                    question: data[2],
-                    answer: data[3],
-                    bonusQuestion: data[4],
-                    bonusAnswer: data[5]
-                })
+            const formData = new URLSearchParams();
+            formData.append('timestamp', data[0]);
+            formData.append('name', data[1]);
+            formData.append('question', data[2]);
+            formData.append('answer', data[3]);
+            formData.append('bonusQuestion', data[4]);
+            formData.append('bonusAnswer', data[5]);
+
+            const response = await fetch(WEB_APP_URL + '?' + formData.toString(), {
+                method: 'GET',
+                redirect: 'follow'
             });
 
             return true;
