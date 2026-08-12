@@ -265,56 +265,44 @@
         <div class="error-message" id="errorMessage">
             Sorry, there was an error submitting your answer. Please try again.
         </div>
-
-        <div class="admin-section">
-            <button class="admin-toggle" onclick="toggleAdmin()">Admin: Update Question</button>
-            
-            <div class="admin-form" id="adminForm">
-                <div class="form-group">
-                    <label for="newQuestion">Main Question</label>
-                    <textarea id="newQuestion"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="newOption1">Option 1</label>
-                    <input type="text" id="newOption1">
-                </div>
-
-                <div class="form-group">
-                    <label for="newOption2">Option 2</label>
-                    <input type="text" id="newOption2">
-                </div>
-
-                <div class="form-group">
-                    <label for="newOption3">Option 3</label>
-                    <input type="text" id="newOption3">
-                </div>
-
-                <div class="form-group">
-                    <label for="newOption4">Option 4</label>
-                    <input type="text" id="newOption4">
-                </div>
-
-                <div class="form-group">
-                    <label for="newBonus">Bonus Question</label>
-                    <textarea id="newBonus"></textarea>
-                </div>
-
-                <button onclick="updateQuestion()">Update Question</button>
-            </div>
-        </div>
     </div>
 
     <script>
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw2CipndoJDGplMeRXGEPZVIJ-TQuGhGoTuYYOj691gORR7vsw1tzckTkWBIZqbPAwH/exec';
+        const SHEET_ID = '1HUN_xbnrg77HzILm4ulZCKa1-yfHvw0vZQ6wUIMhsCA';
         
-        const questionData = JSON.parse(localStorage.getItem('questionData')) || {
-            question: "What is the capital of France?",
-            options: ["Paris", "London", "Berlin", "Madrid"],
-            bonus: "What year was the Eiffel Tower completed?"
+        let questionData = {
+            question: "Loading...",
+            options: ["", "", "", ""],
+            bonus: "Loading..."
         };
 
-        function loadQuestion() {
+        async function loadQuestionFromSheet() {
+            try {
+                const url = WEB_APP_URL + '?action=getQuestion';
+                const response = await fetch(url);
+                const text = await response.text();
+                const data = JSON.parse(text);
+                
+                questionData = {
+                    question: data.question,
+                    options: [data.option1, data.option2, data.option3, data.option4],
+                    bonus: data.bonus
+                };
+                
+                displayQuestion();
+            } catch (error) {
+                console.error('Error loading question:', error);
+                questionData = {
+                    question: "Error loading question. Please refresh the page.",
+                    options: ["", "", "", ""],
+                    bonus: ""
+                };
+                displayQuestion();
+            }
+        }
+
+        function displayQuestion() {
             document.getElementById('mainQuestion').textContent = questionData.question;
             document.getElementById('bonusQuestion').textContent = questionData.bonus;
             
@@ -330,12 +318,6 @@
                 `;
                 container.appendChild(div);
             });
-
-            document.getElementById('newQuestion').value = questionData.question;
-            document.getElementById('newBonus').value = questionData.bonus;
-            for (let i = 0; i < 4; i++) {
-                document.getElementById(`newOption${i+1}`).value = questionData.options[i] || '';
-            }
         }
 
         function setCurrentDate() {
@@ -381,33 +363,8 @@
             }, 3000);
         });
 
-        function toggleAdmin() {
-            const adminForm = document.getElementById('adminForm');
-            adminForm.style.display = adminForm.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function updateQuestion() {
-            const newQuestion = document.getElementById('newQuestion').value;
-            const newBonus = document.getElementById('newBonus').value;
-            const options = [
-                document.getElementById('newOption1').value,
-                document.getElementById('newOption2').value,
-                document.getElementById('newOption3').value,
-                document.getElementById('newOption4').value
-            ];
-
-            questionData.question = newQuestion;
-            questionData.bonus = newBonus;
-            questionData.options = options;
-
-            localStorage.setItem('questionData', JSON.stringify(questionData));
-            loadQuestion();
-            
-            alert('Question updated successfully!');
-        }
-
         setCurrentDate();
-        loadQuestion();
+        loadQuestionFromSheet();
     </script>
 </body>
 </html>
