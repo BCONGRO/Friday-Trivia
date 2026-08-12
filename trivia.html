@@ -360,9 +360,17 @@
                 '&bonusQuestion=' + encodeURIComponent(questionData.bonus) +
                 '&bonusAnswer=' + encodeURIComponent(bonus);
             
+            console.log('Submitting to:', url);
+            
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = url;
+            iframe.onload = function() {
+                console.log('Submission completed');
+            };
+            iframe.onerror = function() {
+                console.log('Submission error');
+            };
             document.body.appendChild(iframe);
             
             document.getElementById('successMessage').style.display = 'block';
@@ -370,7 +378,6 @@
             
             setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
-                document.body.removeChild(iframe);
             }, 3000);
         });
 
