@@ -306,8 +306,7 @@
     </div>
 
     <script>
-        const SHEET_ID = '1HUN_xbnrg77HzILm4ulZCKa1-yfHvw0vZQ6wUIMhsCA';
-        const API_KEY = 'AIzaSyBtkiGqSUVCuuayz_zuWxVmW4L2D9LtH4E';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw2CipndoJDGplMeRXGEPZVIJ-TQuGhGoTuYYOj691gORR7vsw1tzckTkWBIZqbPAwH/exec';
         
         const questionData = JSON.parse(localStorage.getItem('questionData')) || {
             question: "What is the capital of France?",
@@ -346,23 +345,23 @@
         }
 
         async function appendToSheet(data) {
-            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A:F:append?valueInputOption=RAW&key=${API_KEY}`;
-            
-            const response = await fetch(url, {
+            const response = await fetch(WEB_APP_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    values: [data]
+                    timestamp: data[0],
+                    name: data[1],
+                    question: data[2],
+                    answer: data[3],
+                    bonusQuestion: data[4],
+                    bonusAnswer: data[5]
                 })
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to save to sheet');
-            }
-
-            return response.json();
+            return true;
         }
 
         document.getElementById('triviaForm').addEventListener('submit', async function(e) {
