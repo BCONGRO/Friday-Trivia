@@ -288,7 +288,8 @@
                     options: [data.option1, data.option2, data.option3, data.option4],
                     bonus: data.bonus,
                     week: data.week,
-                    category: data.category
+                    category: data.category,
+                    correctAnswer: data.correctAnswer
                 };
                 
                 displayQuestion();
@@ -338,7 +339,8 @@
                 '&answer=' + encodeURIComponent(answer) +
                 '&bonusQuestion=' + encodeURIComponent(questionData.bonus) +
                 '&bonusAnswer=' + encodeURIComponent(bonus) +
-                '&category=' + encodeURIComponent(questionData.category);
+                '&category=' + encodeURIComponent(questionData.category) +
+                '&correctAnswer=' + encodeURIComponent(questionData.correctAnswer);
             
             console.log('Submitting to:', url);
             
